@@ -1,0 +1,2 @@
+    body { width: 240px; font: 13px system-ui; padding: 12px; }
+    label { display: flex; align-items: center; gap: 8px; }
