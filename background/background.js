@@ -39,13 +39,18 @@ async function allowDomain(domain, id) {
   });
 }
 
-// Count blocked requests for the popup badge
+// Debug logger — remove before publishing
 chrome.declarativeNetRequest.onRuleMatchedDebug.addListener((info) => {
-  // Only for debugging — doesn't fire in production builds without feedback permission
   console.log("Blocked:", info.request.url);
 });
 
+// Runs once when the extension is installed or reloaded.
+// Restores the user's last enabled/disabled preference.
 chrome.runtime.onInstalled.addListener(async () => {
   const { enabled = true } = await chrome.storage.local.get("enabled");
-  await setEnabled(enabled);
+  await chrome.declarativeNetRequest.updateEnabledRulesets({
+    enableRulesetIds: enabled ? ["default_filters"] : [],
+    disableRulesetIds: enabled ? [] : ["default_filters"]
+  });
+  await chrome.storage.local.set({ enabled });
 });
